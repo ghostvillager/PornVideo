@@ -1,3 +1,9 @@
+// 動画ファイルリスト
+const videoFiles = [
+    { src: '動画/僕は小さな淫魔のしもべ 第1話家畜生活の始まり.mp4', genre: 'アニメ' },
+    { src: '動画/僕は小さな淫魔のしもべ 第2話 クロエのお食事タイム.mp4', genre: 'アニメ' }
+];
+
 // ローカルストレージにデフォルトの動画設定を保存する関数
 function setDefaultVideo() {
     const videoFrame = document.getElementById('videoFrame');
@@ -60,30 +66,35 @@ function searchVideos(query = null) {
         return; // クエリが空の場合、何もしない
     }
     
-    const videoLinks = document.querySelectorAll('.video-link-item');
     const resultContainer = document.getElementById('searchResults');
     clearSearchResults(); // 検索結果のリストをクリア
     let found = false;
     const seenTitles = new Set(); // 表示済みのタイトルを追跡
 
-    videoLinks.forEach(linkItem => {
-        const link = linkItem.querySelector('a');
-        const videoTitle = link.textContent.toLowerCase();
-        const params = link.getAttribute('onclick').match(/changeVideo\('(.*?)',\s*'(.*?)'(?:,\s*'(.*?)')?\)/);
+    videoFiles.forEach(video => {
+        const fileName = video.src.split('/').pop().toLowerCase();
+        const videoTitle = fileName.replace(/\.mp4$/, '');
+        const genre = video.genre.toLowerCase();
 
-        if (params) {
-            const videoSrc = params[1].toLowerCase();
-            const genre1 = params[2] ? params[2].toLowerCase() : '';
-            const genre2 = params[3] ? params[3].toLowerCase() : '';
+        // 検索条件に一致し、かつまだ表示していない場合
+        if ((videoTitle.includes(query) || genre.includes(query)) && !seenTitles.has(videoTitle)) {
+            const linkItem = document.createElement('div');
+            linkItem.classList.add('video-link-item', 'candidate-list-item');
 
-            // 検索条件に一致し、かつまだ表示していない場合
-            if ((videoTitle.includes(query) || videoSrc.includes(query) || genre1.includes(query) || genre2.includes(query)) && !seenTitles.has(videoTitle)) {
-                const clone = linkItem.cloneNode(true); // クローンを作成
-                clone.classList.add('candidate-list-item'); // CSSクラスを追加
-                resultContainer.appendChild(clone); // 検索結果のリストに追加
-                seenTitles.add(videoTitle); // タイトルを記録
-                found = true;
-            }
+            const link = document.createElement('a');
+            link.href = '#';
+            link.textContent = videoTitle;
+            link.onclick = () => changeVideo(video.src, video.genre);
+            
+            const genreSpan = document.createElement('span');
+            genreSpan.textContent = video.genre;
+
+            linkItem.appendChild(link);
+            linkItem.appendChild(genreSpan);
+            resultContainer.appendChild(linkItem);
+
+            seenTitles.add(videoTitle);
+            found = true;
         }
     });
 
@@ -122,7 +133,7 @@ function uploadVideo() {
     const reader = new FileReader();
     reader.onload = function(event) {
         const fileContent = event.target.result.split(',')[1]; // base64データ部分を取得
-        const filename = file.name;
+        const filename = '動画/' + file.name;
 
         const data = {
             message: `Add ${filename}`,
@@ -130,10 +141,10 @@ function uploadVideo() {
             branch: 'main'
         };
 
-        fetch('https://api.github.com/repos/ghostvillager/MyRoom/contents/' + filename, {
+        fetch('' + filename, {
             method: 'PUT',
             headers: {
-                'Authorization': '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',
+                'Authorization': '',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
@@ -141,8 +152,7 @@ function uploadVideo() {
         .then(response => {
             if (response.ok) {
                 alert('動画がアップロードされました。');
-                // 必要に応じて検索リストを更新
-                searchVideos(filename);
+                searchVideos(filename); // 必要に応じて検索リストを更新
             } else {
                 alert('アップロードに失敗しました。');
             }
@@ -155,6 +165,3 @@ function uploadVideo() {
 
     reader.readAsDataURL(file);
 }
-
-
-
