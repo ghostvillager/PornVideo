@@ -1,91 +1,59 @@
-<!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>マルチデバイス対応のウェブページ</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>マルチデバイス対応のウェブページ</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="container">
+    <header>
+      <h1>動画ライブラリ</h1>
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="キーワードで検索...">
+        <button id="searchBtn">検索</button>
+      </div>
+    </header>
 
-<div class="container">
-    <div class="main-content">
-        <h1>マルチデバイス対応のウェブページ</h1>
-
-        <!-- 検索バー -->
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="動画を検索...">
-            <button onclick="searchVideos()">検索</button>
+    <main>
+      <section class="video-display">
+        <div class="video-wrapper">
+          <video id="videoFrame" controls autoplay muted>
+            <source id="videoSource" src="動画/リズミカルに犯す Ver2.0-鏡音リン [2160p].mp4" type="video/mp4">
+            お使いのブラウザは動画タグに対応していません。
+          </video>
         </div>
-
-        <!-- 現在再生中のジャンル表示 -->
-        <div class="current-video-info" id="currentVideoGenreContainer">
-            現在再生中のジャンル: <span id="currentVideoGenre">ボイスロイド</span>
+        <div class="video-info">
+          <p>現在再生中のジャンル: <span id="currentGenre">ボイスロイド</span></p>
+          <div class="actions">
+            <button id="setDefault">デフォルトに設定</button>
+            <button id="resetDefault">リセット</button>
+          </div>
         </div>
+      </section>
 
-        <!-- 動画アップロードフォーム -->
-        <div class="upload-container">
-            <h2>動画をアップロード(未完成)</h2>
-            <form id="uploadForm">
-                <input type="file" id="videoFile" accept="video/mp4">
-                <button type="button" onclick="uploadVideo()">アップロード</button>
-            </form>
-        </div>
+      <section class="search-results">
+        <h2>検索結果</h2>
+        <div id="noResults" class="no-results">該当する動画がありません。</div>
+        <ul id="searchResults"></ul>
+      </section>
+    </main>
 
-        <!-- 動画表示エリア -->
-        <div class="video-container">
-            <video id="videoFrame" controls autoplay muted>
-                <source src="動画/リズミカルに犯す Ver2.0-鏡音リン　[2160p].mp4" type="video/mp4" id="videoSource">
-                お使いのブラウザは動画タグに対応していません。
-            </video>
-        </div>
+    <aside class="sidebar">
+      <h2>おすすめジャンル</h2>
+      <div class="genre-list">
+        <button data-genre="アニメ">アニメ</button>
+        <button data-genre="リン">リン</button>
+        <button data-genre="その他">その他</button>
+      </div>
+      <h2>リンク集</h2>
+      <ul class="links">
+        <li><a href="https://www.dmm.co.jp/top/" target="_blank">Fanza</a></li>
+        <li><a href="https://www.dlsite.com/maniax/" target="_blank">DLSite</a></li>
+      </ul>
+    </aside>
+  </div>
 
-        <!-- デフォルト設定・リセットボタン -->
-        <div class="default-btn-container">
-            <button class="set-default-button" onclick="setDefaultVideo()">この動画をデフォルトに設定(未完成)</button>
-            <button class="reset-default-button" onclick="resetDefaultVideo()">デフォルトに戻す</button>
-        </div>
-
-        <!-- 検索結果が見つからなかった時のメッセージ -->
-        <div class="no-results" id="noResults">動画が見つかりませんでした。</div>
-    </div>
-
-    <!-- サイドバー -->
-    <div class="sidebar">
-        <!-- ジャンル検索結果の表示 -->
-        <div class="search-results-info" id="searchResultGenreContainer" style="display:none;">
-            <span id="searchResultGenre"></span>
-        </div>
-
-        <!-- おすすめ動画リンク -->
-        <div class="video-links" id="videoLinks">
-            <div class="video-link-item">
-                <a href="#" onclick="changeVideo('動画/僕は小さな淫魔のしもべ 第1話家畜生活の始まり.mp4', 'アニメ', '淫魔')">僕は小さな淫魔のしもべ 第1話</a>
-                <span>アニメ</span>
-            </div>
-            <div class="video-link-item">
-                <a href="#" onclick="changeVideo('動画/僕は小さな淫魔のしもべ 第2話 クロエのお食事タイム.mp4', 'アニメ', '淫魔')">僕は小さな淫魔のしもべ 第2話</a>
-                <span>アニメ</span>
-            </div>
-        </div>
-
-        <!-- ジャンル選択ボタン -->
-        <div class="genres">
-            <span onclick="searchVideosByGenre('アニメ')">アニメ</span>
-            <span onclick="searchVideosByGenre('リン')">リン</span>
-            <span onclick="searchVideosByGenre('その他')">その他</span>
-        </div>
-
-        <!-- ジャンル検索結果の表示 -->
-        <div id="searchResults" class="candidate-list"></div>
-
-        <!-- アクセスボタン -->
-        <a href="https://www.dmm.co.jp/top/" target="_blank">Fanzaにアクセス</a>
-        <a href="https://www.dlsite.com/maniax/" target="_blank">DLSiteにアクセス</a>
-    </div>
-</div>
-
-<script src="scripts.js"></script>
-
+  <script src="scripts.js"></script>
 </body>
 </html>
